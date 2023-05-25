@@ -1,47 +1,33 @@
-const usersDB = require('../model/users');
+const mCartDB = require('../model/users');
 
-let userService = {}
+const mCartService = {}
 
-let throwError = (errorMessage, statusCode) => {
-    let err = new Error(errorMessage);
-    err.status = statusCode;
+const throwError = (errMessage, errStatus) => {
+    let err = new Error(errMessage);
+    err.status = errStatus;
     throw err;
 }
 
-userService.register = async (userObj) => {
-    let registeredUser = await usersDB.register(userObj);
-    return registeredUser ? registeredUser : throwError('User Registration Failed', 500);
+mCartService.login = async (username, password) => {
+    let userData = await mCartDB.login(username);
+    return userData ?
+        (userData.password === password) ? 
+        { message: "user logged In Successfully" } : throwError('Invalid Credentials', 403) : throwError('Invalid Credentials', 403)
 }
 
-userService.login = async (userObj) => {
-    let userData = await usersDB.login(userObj.userName);
-    if (!userData) {
-        throwError('Email Id is not Registered', 404);
-    } else if (userData.password !== userObj.password) {
-        throwError('Invalid Password', 403);
-    } else {
-        return userData;
-    }
+mCartService.register = async (userData) => {
+    let registeredUser = await mCartDB.register(userData);
+    return registeredUser ? { message: 'User Registration Successful' } : throwError('User Registration Failed', 500)
 }
 
-userService.getOrders = async (currentUser) => {
-    if (currentUser) {
-        let ordersObj = await usersDB.getOrders(currentUser.userName);
-        if (ordersObj.orders.length) return ordersObj.orders
-        else throwError("Seems You havent shopped with us yet... Get started now", 404);
-    } else {
-        throwError("Please Login to Continue", 403);
-    }
+mCartService.getAllProducts = async () => {
+    let products = await mCartDB.getAllProducts();
+    return products ? products : throwError('No Product Available', 404)
 }
 
-userService.placeOrder = async (currentUser, orderData) => {
-    if (currentUser) {
-        let newOrderId = await usersDB.placeOrder(currentUser.userName, orderData);
-        if (newOrderId) return newOrderId;
-        else throwError('Order could not be completed! Please try again', 500);
-    } else {
-        throwError("Please Login to Continue", 403);
-    }
+mCartService.getProductById = async (productId) => {
+    let productDetails = await mCartDB.getProductById(productId);
+    return productDetails ? productDetails : throwError('Product details not found', 404)
 }
 
-module.exports = userService;
+module.exports = mCartService;
