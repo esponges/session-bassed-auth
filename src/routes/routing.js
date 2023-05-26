@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const setupdb = require('../model/setupdb');
 const mCartService = require('../service/users');
+const jwt = require('jsonwebtoken');
 
 router.get('/setupdb', async (req, res, next) => {
     try {
@@ -12,18 +13,31 @@ router.get('/setupdb', async (req, res, next) => {
     }
 })
 
-router.post('/login', async (req, res, next) => {
+// router.post('/login', async (req, res, next) => {
+//     try {
+//         let username = req.body.userName;
+//         let password = req.body.password;
+//         let successResponse = await mCartService.login(username, password);
+//         req.session.userName = username;
+//         req.session.password = password;
+//         res.json(successResponse)
+//     } catch (err) {
+//         next(err)
+//     }
+// })
+
+router.post('/login', (req, res, next) => {
     try {
-        let username = req.body.userName;
-        let password = req.body.password;
-        let successResponse = await mCartService.login(username, password);
-        req.session.userName = username;
-        req.session.password = password;
-        res.json(successResponse)
+        const userName = req.body.userName;
+        /* Payload - along with userName, also contains issued at time and expiry time */ 
+        const user = { name: userName, iat: Math.floor(Date.now() / 1000) - 60, exp: Math.floor(Date.now() / 1000) + (60 * 60) };
+        /* jwt.sign() creates the JSON Web Token */
+        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+        res.json({ accessToken: accessToken });
     } catch (err) {
-        next(err)
+        next(err);
     }
-})
+});
 
 router.post('/register', async (req, res, next) => {
     try {

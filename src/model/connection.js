@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 const userSchema = mongoose.Schema({
     userName: { type: String, required: [true, 'userName is mandatory'], unique: true },
     password: { type: String, required: [true, 'Password is mandatory'] },
     emailId: { type: String, required: [true, 'emailId is mandatory'] },
-    contactNo: { type: Number, required: [true, 'contactNo is mandatory'] }
+    contactNo: { type: Number, required: [true, 'contactNo is mandatory'] },
+    age: { type: Number, required: [true, 'age is mandatory'] },
+    role: { type: String, required: [true, 'role is mandatory'] }
 })
 
 const productSchema = mongoose.Schema({
@@ -26,7 +29,7 @@ let throwError = (message, statusCode) => {
 let connection = {}
 
 connection.createConnection = () => {
-    return mongoose.connect('mongodb://localhost:27017/mCartDB', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+    return mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
 }
 
 connection.getUserCollection = async () => {
@@ -35,7 +38,7 @@ connection.getUserCollection = async () => {
         let userModel = await database.model('Users', userSchema);
         return userModel;
     } catch (err) {
-        throwError('Database Connection Failed', 500)
+        throwError(err?.message || 'Database Connection Failed', 500)
     }
 }
 
