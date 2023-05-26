@@ -39,6 +39,23 @@ router.post('/login', (req, res, next) => {
     }
 });
 
+router.get('/products', (req, res, next) => {
+    /* Fetches the authorization data from the request header */
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+    /* Checks if the JWT is existing in the request header */
+    if (!token) { res.status(401); res.json({ message: "Token not available" }) }
+    else {
+        /* Verifies the token fetched from the request header */
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+            /* Checks if there is any error */
+            if (err) { res.status(403); res.json({ message: "Invalid Request" }) }
+            /* Sends User Data and product data as response if token is verified successfully */
+            else res.json({ user: user, product: { productName: 'Google Pixel 3a', price: 'USD 500' } })
+        })
+    }
+});
+
 router.post('/register', async (req, res, next) => {
     try {
         let userData = req.body;
