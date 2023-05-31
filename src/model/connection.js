@@ -1,59 +1,34 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
 
-const userSchema = mongoose.Schema({
+let userSchema = mongoose.Schema({
     userName: { type: String, required: [true, 'userName is mandatory'], unique: true },
-    password: { type: String, required: [true, 'Password is mandatory'] },
-    emailId: { type: String, required: [true, 'emailId is mandatory'] },
-    contactNo: { type: Number, required: [true, 'contactNo is mandatory'] },
-    age: { type: Number, required: [true, 'age is mandatory'] },
-    role: { type: String, required: [true, 'role is mandatory'] }
+    password: { type: String, required: [true, 'password is mandatory'] },
+    orders: {
+        type: [
+            {
+                orderId: { type: Number, unique: true },
+                productName: { type: String, required: [true, 'Product Name is mandatory'] },
+                billAmount: { type: String, required: [true, 'Bill Amount is mandatory'] }
+            }
+        ], default: []
+    }
 })
-
-const productSchema = mongoose.Schema({
-    productId: { type: Number, unique: true },
-    productName: { type: String, required: [true, 'productName is required'] },
-    category: { type: String, required: [true, 'category is required'] },
-    description: { type: String, required: [true, 'description is required'] },
-    price: { type: Number, required: [true, 'price is required'] },
-    rating: { type: Number, required: [true, 'rating is required'] },
-    manufacturer: { type: String, required: [true, 'manufacturer is required'] }
-})
-
-let throwError = (message, statusCode) => {
-    let err = new Error(message);
-    err.status = statusCode
-    throw err;
-}
 
 let connection = {}
 
-connection.createConnection = () => {
-    return mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
-}
-
 connection.getUserCollection = async () => {
     try {
-        let database = await connection.createConnection();
-        let userModel = await database.model('Users', userSchema);
+        let conn = await mongoose.connect('mongodb://localhost:27017/UsersDB', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+        let userModel = await conn.model('Users', userSchema);
         return userModel;
-    } catch (err) {
-        throwError(err?.message || 'Database Connection Failed', 500)
+    } catch (error) {
+        if (error) { throw error; }
+        else {
+            let err = new Error('Database Connection failed');
+            err.status = 500;
+            throw err;
+        }
     }
 }
-
-connection.getProductsCollection = async () => {
-    try {
-        let database = await connection.createConnection();
-        let productsModel = await database.model('Products', productSchema)
-        return productsModel;
-    } catch (err) {
-        throwError('Database Connection Failed', 500)
-    }
-}
-
 
 module.exports = connection;
-
-
-

@@ -1,0 +1,41 @@
+# REGISTER REQUEST
+POST http://localhost:3000/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "userName":"John_Doe",
+    "password":"John@123"
+}
+
+### 
+
+# LOGIN REQUEST
+POST http://localhost:3000/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "userName":"John_Doe",
+    "password":"John@123"
+}
+
+### 
+# eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkpvaG5fRG9lIiwiaWF0IjoxNjAwNTAyNzg0LCJleHAiOjE2MDA1MDY0NDR9.-WBGPHaWbqIFwRtxexyKYR0vEc7RT4W16WO1m7_-k3o
+# PLACE ORDER
+
+PUT http://localhost:3000/place-order HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkpvaG5fRG9lIiwiaWF0IjoxNjAwNTAyNzg0LCJleHAiOjE2MDA1MDY0NDR9.-WBGPHaWbqIFwRtxexyKYR0vEc7RT4W16WO1m7_-k3o
+Content-Type: application/json
+
+{
+    "productName":"Iphone 11 Max pro",
+    "billAmount":950
+}
+
+
+
+### 
+# eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkpvaG5fRG9lIiwiaWF0IjoxNjAwNTAyNzg0LCJleHAiOjE2MDA1MDY0NDR9.-WBGPHaWbqIFwRtxexyKYR0vEc7RT4W16WO1m7_-k3o
+# FETCH USER ORDERS
+GET http://localhost:3000/orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkpvaG5fRG9lIiwiaWF0IjoxNjAwNTAyNzg0LCJleHAiOjE2MDA1MDY0NDR9.-WBGPHaWbqIFwRtxexyKYR0vEc7RT4W16WO1m7_-k3o
+
